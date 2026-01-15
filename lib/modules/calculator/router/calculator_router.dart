@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:test_application/modules/calculator/bloc/calculator_bloc.dart';
 import 'package:test_application/modules/calculator/interactor/calculator_interactor.dart';
-import 'package:test_application/modules/calculator/presenter/calculator_presenter.dart';
-import 'package:test_application/presentation/calculator_screen.dart'; // We will move this next
+import 'package:test_application/modules/calculator/view/calculator_view.dart';
 
 class CalculatorRouter {
   static Widget createModule() {
-    return CalculatorScreen(
-      presenterBuilder: (view) {
-        final interactor = CalculatorInteractor();
-        return CalculatorPresenter(view, interactor);
-      },
+    return BlocProvider(
+      create: (context) => CalculatorBloc(CalculatorInteractor()),
+      child: const CalculatorScreen(),
     );
   }
 }
