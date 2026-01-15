@@ -1,4 +1,4 @@
-import 'package:test_application/domain/operation/operation.dart';
+ import 'package:test_application/domain/operation/operation.dart';
 
 class Calculator {
   Operation? _operation;

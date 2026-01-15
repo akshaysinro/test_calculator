@@ -29,6 +29,7 @@ class CalculatorScreen extends StatelessWidget {
                       children: [
                         // Equation Display (History)
                         Text(
+                          key: const Key('display_equation'),
                           provider.equation,
                           style: const TextStyle(
                             color: Colors.grey,
@@ -41,6 +42,7 @@ class CalculatorScreen extends StatelessWidget {
                         const SizedBox(height: 10),
                         // Current Input Display
                         Text(
+                          key: const Key('display_input'),
                           provider.currentInput,
                           style: const TextStyle(
                             color: Colors.white,
@@ -116,6 +118,7 @@ class CalcButton extends StatelessWidget {
             onPressed: () => _handleTap(provider),
             child: Text(
               label,
+              key: Key('btn_$label'),
               style: const TextStyle(fontSize: 28, color: Colors.white),
             ),
           ),
