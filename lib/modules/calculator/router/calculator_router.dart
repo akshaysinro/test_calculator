@@ -7,7 +7,7 @@ import 'package:test_application/modules/calculator/view/calculator_view.dart';
 class CalculatorRouter {
   static Widget createModule() {
     return BlocProvider(
-      create: (context) => CalculatorBloc(CalculatorInteractor()),
+      create: (context) => CalculatorBloc(CalculatorInteractorImpl()),
       child: const CalculatorScreen(),
     );
   }

@@ -1,22 +1,38 @@
 import 'package:test_application/domain/operation/operation.dart';
 import 'package:test_application/infrastrucure/calculator/calculator.dart';
 
-class CalculatorInteractor {
-  final Calculator _calculator = Calculator();
+abstract class CalculatorInteractor {
+  String get currentInput;
+  String? get operatorSymbol;
+  double? get firstOperand;
 
-  // State from Provider (kept here in Interactor or in a separate Entity/Model)
-  // For simplicity matching previous logic, we keep state here.
+  void appendDigit(String digit);
+  void setOperation(Operation op, String symbol);
+  void calculate();
+  void reset();
+}
+
+class CalculatorInteractorImpl implements CalculatorInteractor {
+  final Calculator _calculator;
+
+  CalculatorInteractorImpl({Calculator? calculator})
+      : _calculator = calculator ?? Calculator(); // Allow injection, default to real one
+
+  // State
   String _currentInput = "0";
   double? _firstOperand;
   String? _operatorSymbol;
   Operation? _pendingOperation;
   bool _shouldResetInput = false;
 
-  // Getters for current state to pass to Presenter
+  @override
   String get currentInput => _currentInput;
+  @override
   String? get operatorSymbol => _operatorSymbol;
+  @override
   double? get firstOperand => _firstOperand;
 
+  @override
   void appendDigit(String digit) {
     if (_shouldResetInput) {
       _currentInput = "";
@@ -31,6 +47,7 @@ class CalculatorInteractor {
     }
   }
 
+  @override
   void setOperation(Operation op, String symbol) {
     if (_operatorSymbol != null && !_shouldResetInput) {
       calculate();
@@ -40,10 +57,10 @@ class CalculatorInteractor {
     _pendingOperation = op;
     _operatorSymbol = symbol;
 
-    // Logic from provider: next input clears display
     _shouldResetInput = true;
   }
 
+  @override
   void calculate() {
     if (_firstOperand == null || _pendingOperation == null) return;
 
@@ -59,13 +76,14 @@ class CalculatorInteractor {
       return;
     }
 
-    _currentInput = result.toString(); // Presenter will format this
+    _currentInput = result.toString();
     _firstOperand = result;
     _operatorSymbol = null;
     _pendingOperation = null;
     _shouldResetInput = true;
   }
 
+  @override
   void reset() {
     _resetState();
     _currentInput = "0";

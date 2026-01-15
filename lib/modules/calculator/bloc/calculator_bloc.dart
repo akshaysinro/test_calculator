@@ -1,6 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:test_application/infrastrucure/operation/operation_factory.dart';
 import 'package:test_application/modules/calculator/bloc/calculator_event.dart';
 import 'package:test_application/modules/calculator/bloc/calculator_state.dart';
+import 'package:test_application/modules/calculator/helper/result_formatter.dart';
 import 'package:test_application/modules/calculator/interactor/calculator_interactor.dart';
 
 class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
@@ -11,6 +13,23 @@ class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
     on<OperationPressed>(_onOperationPressed);
     on<CalculatePressed>(_onCalculatePressed);
     on<ClearPressed>(_onClearPressed);
+    on<ButtonPressed>(_onButtonPressed);
+  }
+
+  void _onButtonPressed(ButtonPressed event, Emitter<CalculatorState> emit) {
+    if (event.label == 'C') {
+      _interactor.reset();
+    } else if (event.label == '=') {
+      _interactor.calculate();
+    } else {
+      final operation = OperationFactory.getOperation(event.label);
+      if (operation != null) {
+        _interactor.setOperation(operation, event.label);
+      } else {
+        _interactor.appendDigit(event.label);
+      }
+    }
+    emit(_formatState());
   }
 
   void _onDigitPressed(DigitPressed event, Emitter<CalculatorState> emit) {
@@ -40,22 +59,15 @@ class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
   }
 
   CalculatorState _formatState() {
-    String formattedInput = _formatResult(_interactor.currentInput);
+    String formattedInput = ResultFormatter.format(_interactor.currentInput);
     String equation = "";
 
     if (_interactor.firstOperand != null &&
         _interactor.operatorSymbol != null) {
       equation =
-          "${_formatResult(_interactor.firstOperand!.toString())} ${_interactor.operatorSymbol}";
+          "${ResultFormatter.format(_interactor.firstOperand!.toString())} ${_interactor.operatorSymbol}";
     }
 
     return CalculatorState(currentInput: formattedInput, equation: equation);
-  }
-
-  String _formatResult(String valueStr) {
-    if (valueStr.endsWith(".0")) {
-      return valueStr.substring(0, valueStr.length - 2);
-    }
-    return valueStr;
   }
 }

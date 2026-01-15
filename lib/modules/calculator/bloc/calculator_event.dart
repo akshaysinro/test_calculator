@@ -27,6 +27,15 @@ class OperationPressed extends CalculatorEvent {
   List<Object?> get props => [operation, symbol];
 }
 
+class ButtonPressed extends CalculatorEvent {
+  final String label;
+
+  const ButtonPressed(this.label);
+
+  @override
+  List<Object?> get props => [label];
+}
+
 class CalculatePressed extends CalculatorEvent {}
 
 class ClearPressed extends CalculatorEvent {}

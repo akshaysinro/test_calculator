@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:test_application/infrastrucure/operation/operation_factory.dart';
 import 'package:test_application/modules/calculator/bloc/calculator_bloc.dart';
 import 'package:test_application/modules/calculator/bloc/calculator_event.dart';
 import 'package:test_application/modules/calculator/bloc/calculator_state.dart';
+import 'package:test_application/modules/calculator/helper/calculator_button_style.dart';
 
 class CalculatorScreen extends StatelessWidget {
   const CalculatorScreen({super.key});
@@ -30,29 +30,31 @@ class CalculatorScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         // Equation Display (History)
-                        Text(
-                          state.equation,
-                          key: const Key('display_equation'),
-                          style: const TextStyle(
-                            color: Colors.grey,
-                            fontSize: 32,
-                            fontWeight: FontWeight.w300,
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            state.equation,
+                            key: const Key('display_equation'),
+                            style: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 32,
+                              fontWeight: FontWeight.w300,
+                            ),
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 10),
                         // Current Input Display
-                        Text(
-                          state.currentInput,
-                          key: const Key('display_input'),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 72,
-                            fontWeight: FontWeight.w300,
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            state.currentInput,
+                            key: const Key('display_input'),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 72,
+                              fontWeight: FontWeight.w300,
+                            ),
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     );
@@ -62,15 +64,26 @@ class CalculatorScreen extends StatelessWidget {
             ),
 
             // 2. Button Area
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  _buildButtonRow(context, ['7', '8', '9', '÷']),
-                  _buildButtonRow(context, ['4', '5', '6', '×']),
-                  _buildButtonRow(context, ['1', '2', '3', '-']),
-                  _buildButtonRow(context, ['C', '0', '=', '+']),
-                ],
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: _buildButtonRow(context, ['7', '8', '9', '÷']),
+                    ),
+                    Expanded(
+                      child: _buildButtonRow(context, ['4', '5', '6', '×']),
+                    ),
+                    Expanded(
+                      child: _buildButtonRow(context, ['1', '2', '3', '-']),
+                    ),
+                    Expanded(
+                      child: _buildButtonRow(context, ['C', '0', '=', '+']),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -84,38 +97,15 @@ class CalculatorScreen extends StatelessWidget {
       children: labels.map((label) {
         return CalcButton(
           label: label,
-          color: _getButtonColor(label),
+          color: CalculatorButtonStyle.getButtonColor(label),
           onTap: () => _handleTap(context, label),
         );
       }).toList(),
     );
   }
 
-  Color _getButtonColor(String label) {
-    if (label == 'C') return Colors.grey;
-    if (['÷', '×', '-', '+', '='].contains(label)) return Colors.orange;
-    return const Color(0xFF333333);
-  }
-
   void _handleTap(BuildContext context, String label) {
-    final bloc = context.read<CalculatorBloc>();
-
-    if (label == 'C') {
-      bloc.add(ClearPressed());
-      return;
-    }
-
-    if (label == '=') {
-      bloc.add(CalculatePressed());
-      return;
-    }
-
-    final operation = OperationFactory.getOperation(label);
-    if (operation != null) {
-      bloc.add(OperationPressed(operation, label));
-    } else {
-      bloc.add(DigitPressed(label));
-    }
+    context.read<CalculatorBloc>().add(ButtonPressed(label));
   }
 }
 
@@ -136,8 +126,7 @@ class CalcButton extends StatelessWidget {
     return Expanded(
       child: Container(
         margin: const EdgeInsets.all(8),
-        child: AspectRatio(
-          aspectRatio: 1,
+        child: SizedBox.expand(
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: color,
