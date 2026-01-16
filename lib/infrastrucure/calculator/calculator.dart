@@ -10,7 +10,7 @@ class Calculator implements ICalculator {
   }
 
   @override
-  double calculate(double a, double b) {
+  double calculate(double a, double? b) {
     return _operation!.calculate(a, b);
   }
 }
