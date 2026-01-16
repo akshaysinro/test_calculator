@@ -1,14 +1,16 @@
- import 'package:test_application/domain/operation/operation.dart';
+import 'package:test_application/domain/calculator/calculator_interface.dart';
+import 'package:test_application/domain/operation/operation.dart';
 
-class Calculator {
+class Calculator implements ICalculator {
   Operation? _operation;
 
-  void setOperation(Operation op){
-_operation=op;
-
+  @override
+  void setOperation(Operation op) {
+    _operation = op;
   }
 
-  double calculate(double a, double b){
-return _operation!.calculate(a, b);
+  @override
+  double calculate(double a, double b) {
+    return _operation!.calculate(a, b);
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test_application/infrastrucure/operation/operation_factory.dart';
 import 'package:test_application/modules/calculator/bloc/calculator_event.dart';
 import 'package:test_application/modules/calculator/bloc/calculator_state.dart';
+import 'package:test_application/modules/calculator/helper/input_parser.dart';
 import 'package:test_application/modules/calculator/helper/result_formatter.dart';
 import 'package:test_application/modules/calculator/interactor/calculator_interactor.dart';
 
@@ -17,17 +18,27 @@ class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
   }
 
   void _onButtonPressed(ButtonPressed event, Emitter<CalculatorState> emit) {
-    if (event.label == 'C') {
-      _interactor.reset();
-    } else if (event.label == '=') {
-      _interactor.calculate();
-    } else {
-      final operation = OperationFactory.getOperation(event.label);
-      if (operation != null) {
-        _interactor.setOperation(operation, event.label);
-      } else {
+    final inputType = InputParser.parse(event.label);
+
+    switch (inputType) {
+      case InputType.digit:
         _interactor.appendDigit(event.label);
-      }
+        break;
+      case InputType.operator:
+        final operation = OperationFactory.getOperation(event.label);
+        if (operation != null) {
+          _interactor.setOperation(operation, event.label);
+        }
+        break;
+      case InputType.equality:
+        _interactor.calculate();
+        break;
+      case InputType.clear:
+        _interactor.reset();
+        break;
+      case InputType.unknown:
+        // Handle unknown input or ignore
+        break;
     }
     emit(_formatState());
   }

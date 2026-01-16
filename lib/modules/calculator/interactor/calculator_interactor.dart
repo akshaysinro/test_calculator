@@ -1,3 +1,4 @@
+import 'package:test_application/domain/calculator/calculator_interface.dart';
 import 'package:test_application/domain/operation/operation.dart';
 import 'package:test_application/infrastrucure/calculator/calculator.dart';
 
@@ -13,10 +14,11 @@ abstract class CalculatorInteractor {
 }
 
 class CalculatorInteractorImpl implements CalculatorInteractor {
-  final Calculator _calculator;
+  final ICalculator _calculator;
 
-  CalculatorInteractorImpl({Calculator? calculator})
-      : _calculator = calculator ?? Calculator(); // Allow injection, default to real one
+  CalculatorInteractorImpl({ICalculator? calculator})
+    : _calculator =
+          calculator ?? Calculator(); // Allow injection, default to real one
 
   // State
   String _currentInput = "0";
